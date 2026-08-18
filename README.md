@@ -47,7 +47,8 @@ The business required a dedicated pipeline that could:
 
 ## Data Architecture
 
-<img width="20005" height="11129" alt="project_architecture" src="https://github.com/user-attachments/assets/83cc6d0e-c4b6-4b80-b6c2-fae95524b2f8" />
+<img width="1576" height="873" alt="image" src="https://github.com/user-attachments/assets/2749a924-0f34-4317-a2b5-ff75f6544e2e" />
+
 
 The project follows a **Medallion Architecture** consisting of Bronze,
 Silver, and Gold layers.
