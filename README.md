@@ -49,8 +49,6 @@ The business required a dedicated pipeline that could:
 
 <img width="20005" height="11129" alt="project_architecture" src="https://github.com/user-attachments/assets/83cc6d0e-c4b6-4b80-b6c2-fae95524b2f8" />
 
-## Data Architecture
-
 The project follows a **Medallion Architecture** consisting of Bronze,
 Silver, and Gold layers.
 
@@ -221,5 +219,5 @@ A key challenge was therefore producing a consistent Gold-layer structure that a
 - Enabled SportsBar's Gold layer to integrate with AtliQon's existing Gold layer.
 - Created a foundation for combined analysis of SportsBar and AtliQon data.
 
-## Credits
+
 
