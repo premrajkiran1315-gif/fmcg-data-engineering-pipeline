@@ -4,11 +4,19 @@ An end-to-end data engineering project developed for SportsBar to replace manual
 
 ## Project Overview
 
-AtliQon is a multinational company with an established data pipeline and data platform. SportsBar, a company operating in the sports-products business, was previously managing and storing its data manually.
+AtliQon is a multinational parent company with an established data
+pipeline and data platform. SportsBar is a child company operating in
+the sports-products business.
 
-To improve data reliability, scalability, historical data management, and analytical capabilities, management decided to establish a dedicated data pipeline for SportsBar.
+While AtliQon already had an established data pipeline, SportsBar was
+managing its data manually. Management therefore decided to implement
+a dedicated data pipeline for SportsBar while keeping its processed
+data compatible with AtliQon's existing analytical ecosystem.
 
-The solution processes SportsBar's data through a Medallion Architecture and produces business-ready data that can be used independently for SportsBar analytics or integrated with AtliQon's existing Gold layer when combined analysis is required.
+The solution processes SportsBar's data through a Medallion Architecture
+and produces business-ready data that can be used independently for
+SportsBar analytics or integrated with AtliQon's existing Gold layer
+when combined analysis is required.
 
 ## Business Problem
 
@@ -41,43 +49,113 @@ The business required a dedicated pipeline that could:
 
 <img width="20005" height="11129" alt="project_architecture" src="https://github.com/user-attachments/assets/83cc6d0e-c4b6-4b80-b6c2-fae95524b2f8" />
 
-### Bronze Layer
+## Data Architecture
 
-The Bronze layer stores raw source data while preserving the original information and historical records.
+The project follows a **Medallion Architecture** consisting of Bronze,
+Silver, and Gold layers.
 
-Key responsibilities:
+### Bronze Layer — Raw Data Ingestion
 
-- Raw data ingestion.
-- Historical data preservation.
-- Initial storage of source data.
-- Providing a reliable foundation for downstream processing.
+The Bronze layer ingests raw source data such as Customer, Product,
+Pricing, and Order files from **AWS S3** using **Databricks Auto Loader /
+Lakeflow Jobs**.
 
-### Silver Layer
+Raw data is stored in **Delta Lake / Delta Tables** in an append-only
+format, preserving historical records without modifying the original
+source data.
 
-The Silver layer transforms raw data into clean and standardized datasets.
+After successful ingestion, source files are automatically archived
+from the S3 Landing Zone to the S3 Archive location.
 
-The layer is responsible for cleansing, validating, standardizing, transforming, and integrating the incoming data before it is passed to the Gold layer.
+### Silver Layer — Data Cleansing & Transformation
 
-### Gold Layer
+The Silver layer reads the raw Delta data from the Bronze layer and
+applies data quality and transformation processes.
 
-The Gold layer contains business-ready data designed for analytical consumption.
+The processing includes:
 
-SportsBar's Gold layer provides a structured and reliable representation of its business data for reporting and analysis.
+- Schema and data-type enforcement.
+- Handling missing and null values.
+- Removing duplicate records.
+- Standardizing data structures.
+- Creating clean and unified datasets for downstream business logic.
 
-A major requirement of the project is to make **SportsBar's Gold layer compatible with AtliQon's existing Gold layer**. This allows the two companies' business-ready data to be brought together when management requires combined analysis across the organizations.
+### Gold Layer — Business Analytics & Enterprise Integration
 
-This approach allows:
+The Gold layer transforms the cleaned Silver data into structured
+**fact and dimension models** designed around SportsBar's business
+requirements and analytical metrics.
 
-- SportsBar to maintain its own dedicated data pipeline.
-- AtliQon to continue using its existing data platform.
-- SportsBar's processed data to remain independent while still being compatible with AtliQon's analytical ecosystem.
-- Management to analyze SportsBar and AtliQon data together when required.
+SportsBar's Gold-layer schemas are mapped and aligned with **AtliQon's
+existing Enterprise Gold layer**, allowing the two companies'
+business-ready data to be integrated when combined analysis is required.
+
+The Gold layer serves business-ready datasets for analytical
+consumption through **Databricks Genie** and external BI tools such as
+**Power BI**.
+
 ## DashBoard
+The Power BI dashboard provides a business-level view of SportsBar's
+sales performance and enables analysis across products, customers,
+regions, and time.
 
 <img width="1878" height="672" alt="image" src="https://github.com/user-attachments/assets/30bd5325-671c-4717-ae65-bc508afbcf77" />
 
 <img width="1858" height="767" alt="image" src="https://github.com/user-attachments/assets/72627f71-8537-4dae-afda-333414ce4842" />
 
+## Dashboard Insights
+
+### 1. High-Level Metrics
+
+- **Total Revenue:** **105.34B** generated overall.
+- **Total Quantity Sold:** **34.13M** units.
+- **Customer Base:** **54 unique customers**, indicating a concentrated B2B/wholesale customer base.
+- **Average Selling Price (ASP):** **4,043.16** per unit.
+
+### 2. Channel & Sales Strategy
+
+- **Retailer:** Contributes **78.49%** of total revenue and is the dominant sales channel.
+- **Direct:** Contributes **20.23%** of total revenue.
+- **Key Opportunity:** The high concentration of revenue in the Retailer channel creates an opportunity to strengthen the Direct channel and diversify revenue sources.
+
+### 3. Product & Variant Performance
+
+- **Top Revenue Product:** **PX Grip Cricket Batting Gloves** with approximately **7.98B** in revenue.
+- **Second:** **WL Hex Dumbbell** with approximately **7.62B**.
+- **Third:** **NX Pro Cricket Leg Guards** with approximately **6.21B**.
+- Revenue is distributed across both **Cricket equipment** and **Fitness/Gym equipment**, indicating demand across multiple product categories.
+- **Top Variant:** **Large** with approximately **4.76B** in revenue.
+- **Fitness variants:** **5 kg** and **Curl Bar** are among the strongest-performing variants.
+
+### 4. Seasonal Revenue Trends
+
+- Revenue remains relatively stable from **January to August**, ranging from approximately **4.58B to 6.59B** per month.
+- Revenue increases significantly from **September**, reaching **12.87B**.
+- **November records the highest monthly revenue at 20.82B**.
+- Revenue falls to **7.19B in December** after the November peak.
+
+### 5. Top Customer Accounts
+
+- **FitnessWorld:** **9.53B** revenue from **2.25M units**.
+- **FastTrack Sports:** **8.21B** revenue from **1.94M units**.
+- **Fitness Mania:** **5.96B** revenue.
+- **Active Gear:** **5.87B** revenue.
+
+### 6. Areas for Sales Improvement
+
+Based on the dashboard, the following areas could help improve sales performance:
+
+- **Increase Direct-channel sales:** Since Retailers contribute **78.49%** of revenue, increasing Direct-channel contribution could reduce dependence on a single channel.
+- **Focus on high-performing products:** Maintain inventory and promotional focus on products such as **PX Grip Cricket Batting Gloves, WL Hex Dumbbell, and NX Pro Cricket Leg Guards**.
+- **Optimize inventory before peak months:** The sharp increase in revenue from September to November suggests that inventory and supply planning should be strengthened before the peak period.
+- **Strengthen key-account relationships:** Customers such as **FitnessWorld and FastTrack Sports** contribute significant revenue and should receive focused account management.
+- **Use cross-selling opportunities:** Since both Cricket and Fitness products perform strongly, customers purchasing one category could potentially be targeted with relevant products from the other category.
+- **Diversify the customer base:** With only **54 unique customers**, acquiring additional B2B customers could reduce dependency on a relatively concentrated customer base.
+- **Monitor post-peak performance:** The drop from **20.82B in November to 7.19B in December** should be monitored to understand whether it is driven by demand, inventory, or customer ordering patterns.
+
+### Key Business Recommendation
+
+> **Prioritize peak-season planning, strengthen key customer relationships, increase Direct-channel contribution, and diversify the customer base while maintaining strong availability of high-performing products.**
 
 ## Technologies Used
 
